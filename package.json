@@ -1,0 +1,12 @@
+{
+  "name": "spotlight-v1",
+  "version": "1.0.0",
+  "description": "bla bla...",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sass": "^2.0.4"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.13.0"
+  }
+}
