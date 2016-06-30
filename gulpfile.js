@@ -3,64 +3,64 @@ var gulp = require('gulp');
 var browserSync = require('browser-sync').create();
 var sass = require('gulp-sass');
 // var sourcemaps = require('gulp-sourcemaps');
-// var autoprefixer = require('gulp-autoprefixer');
-// var minifycss = require('gulp-minify-css');
-// var rename = require('gulp-rename');
-// var concat = require('gulp-concat');
-// var uglify = require('gulp-uglify');
+var autoprefixer = require('gulp-autoprefixer');
+var ejs = require("gulp-ejs");
+var rename = require("gulp-rename");
+var concat = require('gulp-concat');
+var gutil = require('gulp-util');
 
-// Static Server + watching scss/html files
-gulp.task('serve', ['sass'], function() {
+// ... variables
+var sassOptions = {
+  errLogToConsole: true,
+  outputStyle: 'expanded'
+  // outputStyle: 'compressed'
+};
+var autoprefixerOptions = {
+  // browsers: ['Firefox < 20']
+};
+
+
+gulp.task('serve', ['sass', 'ejs', 'scripts'], function() {
 
     browserSync.init({
         server: "./"
     });
 
-    gulp.watch('./sass/*.scss', ['sass']);
-    gulp.watch("*.html").on('change', browserSync.reload);
+    // gulp.watch("*.html").on('change', browserSync.reload);
+    gulp.watch('./ejs/**/*.ejs', ['ejs']);
+    gulp.watch('./sass/**/*.scss', ['sass']);
+    gulp.watch("./js/*.js", ['scripts']);
 });
 
-// // Compile sass into CSS & auto-inject into browsers
-gulp.task('sass', function() {
-    return gulp.src("./sass/**/*.scss")
-        .pipe(sass().on('error', sass.logError))
-        .pipe(gulp.dest("dist/css"))
+
+gulp.task('ejs', function() {
+        return gulp.src("./ejs/index.ejs")
+        .pipe(ejs({
+    		msg: 'Hello Gulp!'
+    	}).on('error', gutil.log))
+        .pipe(rename('index.html'))
+        .pipe(gulp.dest("./"))
         .pipe(browserSync.stream());
 });
 
+
+gulp.task('sass', function() {
+    return gulp.src("./sass/**/*.scss")
+        // .pipe(sourcemaps.init())
+        .pipe(sass(sassOptions).on('error', sass.logError))
+        // .pipe(sourcemaps.write())
+        .pipe(autoprefixer(autoprefixerOptions))
+        .pipe(gulp.dest("./dist"))
+        .pipe(browserSync.stream());
+});
+
+
+gulp.task('scripts', function() {
+  return gulp.src('./js/*.js')
+    .pipe(concat('all.js'))
+    .pipe(gulp.dest('./dist'))
+    .pipe(browserSync.stream());
+});
+
+
 gulp.task('default', ['serve']);
-
-
-
-//
-// // ------ whithout sync -------------------------------------------------------------
-// var gulp = require('gulp');
-// var concat = require('gulp-concat');
-// var sass = require('gulp-sass');
-//
-//
-// // Concatenate JS Files
-// gulp.task('scripts', function() {
-//    return gulp.src('./js/*.js')
-//      .pipe(concat('main.js'))
-//      .pipe(gulp.dest('bundle'));
-// });
-//
-//
-// // Compile sass into CSS
-// gulp.task('sass', function() {
-//     return gulp.src("./scss/**/*.scss")
-//         .pipe(sass().on('error', sass.logError))
-//         .pipe(gulp.dest("bundle"));
-// });
-//
-//
-// gulp.task('watch', function() {
-//    // Watch .js files
-//    gulp.watch('./js/*.js', ['scripts']);
-//     // Watch .scss files
-//    gulp.watch('./scss/*.scss', ['sass']);
-//  });
-//
-//  // Default Task
-//  gulp.task('default', ['scripts', 'sass', 'watch']);
