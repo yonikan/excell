@@ -313,7 +313,7 @@ h5 {
 }
 
 .banner {
-  background-image: url(../../dist/img/backs/banner.jpg);
+  background: url(../dist/img/backs/banner.jpg) #1ABC9C;
   background-position: center top;
   background-repeat: no-repeat;
   background-size: cover;
